@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+
+
+{% block content %}
+	
+<div class="container-fluid well" id="map">
+	
+	<div class="container well">
+		{% if forms.errors %}
+			<p>sorry</p>
+		{% endif %}
+		
+		<form action="/accounts/auth/" method="post"> {% csrf_token %}
+			<label for="username">user name: </label>
+			<input type="text" name="username" value="" id="username">
+			<label for="password">passowrd: </label>
+			<input type="password" name="password" value="" id="password">
+			
+			<input type="submit" value="login" />
+		</form>
+	</div>
+	
+	
+	
+</div>
+	
+
+{% endblock %}

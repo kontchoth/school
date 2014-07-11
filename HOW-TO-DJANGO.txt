@@ -1,0 +1,120 @@
+HOW TO DO VARIOUS THINGS IN DJANGO 
+
+
+1. Steps to make Django work with you home /var/www/html 
+
+  - Make sure you have the latest copy of the Django code under /test-farm/util/django/tfPrj/ 
+  
+  - Install the necessery packages if they are not installed
+       
+       sudo yum install Django
+       sudo yum install MySQL-python
+       sudo easy_install -Z django-chartit
+       sudo yum install Django-south
+       sudo easy_install beautifulsoup
+       
+  - Add the two lines below to your ( /etc/httpd/conf/httpd.conf). I usually put them right below the line for the DocumentRoot (DocumentRoot "/var/www/html") 
+  
+       WSGIScriptAlias /testfarm /var/www/html/tfPrj/apache/django.wsgi
+       Alias /static/ /var/www/html/tfPrj/templates/static/
+       
+  - Create a symbolic link in your /var/www/html pointing to the django code 
+  
+       sudo ln -sf ../../../home/usr99999/working-copy/test-farm/test-farm/util/django/tfPrj/ tfPrj
+       
+  - Restart the Apache 
+  
+       sudo service httpd restart 
+     
+  - Check if its working 
+  
+         http://ger-usr99999-linux-1/testfarm
+       
+   
+2. Steps to make a model in Django 
+
+  - All the models (tables definitions) are stored in /django/tfPrj/testfarmPrj/testfarm/models.py    
+    
+  - Below is a sample of a table with different fields - integer, char, boolean and foreign keys 
+    
+  - Do not create a default key  "id" as it will be automatically created for you. Aslo don't create the names with "id" in them such as "modelType_id" becuase
+      django will add an id too so you will end up with modelType_id_id 
+    
+  - CAUTHION: Python is very sensitive to spaces and identations so make sure everythign is aligned correctly
+    
+    
+class sampleModel (models.Model):    
+     modelType        =  models.ForeignKey(modelTypes)    
+     softwareRevision = models.CharField(max_length=50)
+     guiRunCount        = models.IntegerField()
+     is_App_Test      = models.BooleanField(choices=BOOL_CHOICES)
+     dateTime         = models.DateTimeField(default=datetime.now())  
+   
+     class Meta:
+         db_table = "testruns"
+         
+     
+  - Once you are done with the model you have to add it to the DB. From /django/tfPrj/testfarmPrj execute the following commands one after another.
+     
+     python manage.py sqlall testfarm
+     python manage.py syncdb
+     ./manage.py schemamigration testfarm --auto
+     ./manage.py migrate testfarm
+
+  - Verify the new table was added to the DB with Mysql-Workbench or directly through MySql
+     
+
+3. Steps to create a new view and a new html page  
+
+  - All the views are stored in /django/tfPrj/testfarmPrj/testfarm/views.py      
+  - All the html pages are stored in /django/tfPrj/templates    
+  - All new images/pics are stored in /django/tfPrj/templates/static/images     
+  - All new url definitions are stored in /django/tfPrj/testfarmPrj/testfarmPrj/url.py
+
+     
+  - First create your html page in /django/tfPrj/templates . For example: 
+     
+          sample.html 
+      
+     The page has to follow the format below so that django can recognize it. 
+
+{% extends "base.html" %}
+{% block base %}
+   <html>
+   
+      Here is where your code goes, {{user.name}} .
+   
+   </html>     
+{% endblock %}
+
+
+  - Second create your view in /django/tfPrj/testfarmPrj/testfarm/views.py
+     
+def my_samle_view(request):	
+    user  = users.objects.filter(user__id=1))   (where "users" is some model in your models.py  . Make sure you include all new models at the top of the views.py   Example: from testfarm.models import users )
+    
+    tmpl = loader.get_template("sample.html");
+    cont = Context({'user':user})
+    return render_to_response('sample.html', cont, context_instance=RequestContext(request) )
+    
+   
+  - Third create the url in /django/tfPrj/testfarmPrj/testfarmPrj/url.py
+    
+     url(r'^sample/', 'testfarm.views.my_sample_view'),   
+
+
+  - Restart the Apache 
+  
+       sudo service httpd restart 
+
+  - Check if its working . You should see an html page with  "Here is where your code goes, Ken Dickinson ."
+  
+         http://ger-usr99999-linux-1/testfarm/sample 
+         
+         
+         
+         
+       
+
+                  
+       

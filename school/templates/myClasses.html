@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+<!--
+{% block header %}
+	{% include "myClassesheader.html" %}
+{% endblock %}
+-->
+
+
+{% block content %}
+	
+<div class="container-fluid well" id="map">
+	
+	<div class="well">
+		<strong>Security Tip:</strong> Make sure you logout when you are done
+	</div>
+	
+	
+	<div class="container well">
+		{% if forms.errors %}
+			<p>sorry</p>
+		{% endif %}
+		
+		
+		<form class="form-signin" role="form" action="/accounts/auth/" method="post"> {% csrf_token %}
+			<h2 class="form-signin-heading">Please sign in</h2>
+			<input type="username" class="form-control" placeholder="username" required autofocus>
+			<input type="password" class="form-control" placeholder="Password" required>
+			
+			<div class="checkbox">
+				<label>
+					<input type="checkbox" value="remember-me"> Remember me
+				</label>
+			</div>
+        
+			<button class="btn btn-lg btn-primary btn-block" type="submit" value="login">Sign in</button>
+		</form>
+
+		
+	</div>
+</div>
+	
+
+{% endblock %}
